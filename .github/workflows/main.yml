@@ -44,7 +44,7 @@ jobs:
       - name: Run Bot
         run: |
           cd app-code
-          timeout 5h45m python forward_bot_multi.py || true
+          timeout 345m python forward_bot_multi.py || true
 
       - name: Save State
         run: |
