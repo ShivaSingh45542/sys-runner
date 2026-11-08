@@ -1,0 +1,56 @@
+name: System Runner
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: bot-runner
+  cancel-in-progress: true
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout Private Code
+        uses: actions/checkout@v4
+        with:
+          repository: ShivaSingh45542/core-logic
+          token: ${{ secrets.GH_PAT }}
+          path: app-code
+
+      - name: Restore State
+        run: |
+          cd app-code
+          git fetch origin bot-state || true
+          git checkout origin/bot-state -- . || true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd app-code
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Bot
+        run: |
+          cd app-code
+          timeout 5h45m python forward_bot_multi.py || true
+
+      - name: Save State
+        run: |
+          cd app-code
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add -A
+          git commit -m "Auto-save state [skip ci]" || echo "No changes"
+          git push origin HEAD:bot-state
