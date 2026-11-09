@@ -46,11 +46,11 @@ jobs:
           cd app-code
           timeout 345m python forward_bot_multi.py || true
 
-      - name: Save State
+            - name: Save State
         run: |
           cd app-code
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add -A
           git commit -m "Auto-save state [skip ci]" || echo "No changes"
-          git push origin HEAD:bot-state
+          git push -f origin HEAD:bot-state
