@@ -28,7 +28,7 @@ jobs:
         run: |
           cd app-code
           git fetch origin bot-state || true
-          git checkout origin/bot-state -- . || true
+          git checkout origin/bot-state -- data.json secret.key || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -51,6 +51,6 @@ jobs:
           cd app-code
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add -A
+          git add data.json secret.key
           git commit -m "Auto-save state [skip ci]" || echo "No changes"
           git push -f origin HEAD:bot-state
